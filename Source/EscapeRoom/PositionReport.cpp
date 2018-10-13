@@ -21,8 +21,8 @@ void UPositionReport::BeginPlay()
 {
 	Super::BeginPlay();
 	FString my_name = GetOwner()->GetName();
-	FVector my_position = GetOwner()->GetTransform().GetLocation();
-	UE_LOG(LogTemp, Warning, TEXT("Position report reporting for duty on %s, (%f,%f,%f)"), *my_name, my_position.X, my_position.Y, my_position.Z);
+	FString my_position = GetOwner()->GetTransform().GetLocation().ToString();
+	UE_LOG(LogTemp, Warning, TEXT("%s is at %s"), *my_name, *my_position);
 	// ...
 	
 }
