@@ -31,6 +31,6 @@ private:
 	UPROPERTY(EditAnywhere)
 	ATriggerVolume * PressurePlate = nullptr;
 	
-	UPROPERTY(EditAnywhere)
+
 	AActor * PressurePlateActor;
 };
