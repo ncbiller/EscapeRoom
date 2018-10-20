@@ -4,6 +4,7 @@
 #include "GameFramework/Actor.h"
 #include "GameFramework/PlayerController.h"
 #include "Engine/World.h"
+#include "DrawDebugHelpers.h"
 
 // Sets default values for this component's properties
 UGrabber::UGrabber()
@@ -32,12 +33,20 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	// Get player viewpoint
-	FVector ViewVector;
-	FRotator ViewRotator;
+	FVector PlayerViewPointLocation;
+	FRotator PlayerViewPointRotation;
 
-	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(ViewVector,ViewRotator);
+	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(PlayerViewPointLocation,PlayerViewPointRotation);
 
-	UE_LOG(LogTemp, Warning, TEXT("View Vector %s ViewRotator %s"), *ViewVector.ToString(), *ViewRotator.ToString());
+	/*UE_LOG(LogTemp, Warning, TEXT("View Vector %s ViewRotator %s"), *ViewVector.ToString(), *ViewRotator.ToString());*/
+
+	FVector LineTraceEnd = PlayerViewPointLocation + PlayerViewPointRotation.Vector() * ReachDistance;
+
+	DrawDebugLine(GetWorld(), PlayerViewPointLocation, LineTraceEnd, FColor::Red,false,-1.f,0,5.f);
+
+	//GetWorld()->LineTraceSingleByObjectType()
+
+	// Dr
 
 	// Ray cast out to reach distance
 
