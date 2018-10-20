@@ -44,12 +44,23 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 
 	DrawDebugLine(GetWorld(), PlayerViewPointLocation, LineTraceEnd, FColor::Red,false,-1.f,0,5.f);
 
-	//GetWorld()->LineTraceSingleByObjectType()
+	FHitResult hitResult;
+	FCollisionQueryParams Params(FName(TEXT("")), false, GetOwner());
 
-	// Dr
+	///ray-cast out to  reach distance
+	bool check = GetWorld()->LineTraceSingleByObjectType(
+		hitResult,
+		PlayerViewPointLocation,
+		LineTraceEnd,
+		FCollisionObjectQueryParams(ECollisionChannel::ECC_PhysicsBody),
+		Params);
 
-	// Ray cast out to reach distance
+	AActor * ActorHit = hitResult.GetActor();
+	
+	if (ActorHit) {
+		UE_LOG(LogTemp,Warning,TEXT("Actor hit %s"), *ActorHit->GetName())
+	}
+	
 
-	// Return object hit
 }
 
