@@ -6,6 +6,7 @@
 #include "Engine/World.h"
 #include "DrawDebugHelpers.h"
 
+
 // Sets default values for this component's properties
 UGrabber::UGrabber()
 {
@@ -28,8 +29,23 @@ void UGrabber::BeginPlay()
 		UE_LOG(LogTemp,Error,TEXT("Physics Handle Not Found"))
 	}
 	
+	InputComponent = GetOwner()->FindComponentByClass<UInputComponent>();
+
+	if (InputComponent) {
+		UE_LOG(LogTemp, Warning, TEXT("Input Handle Found"))
+
+			InputComponent->BindAction(FName(TEXT("Grab")), IE_Pressed, this, &UGrabber::Grab);
+
+	}
+
 }
 
+
+void UGrabber::Grab()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Grab Pressed"))
+
+}
 
 // Called every frame
 void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
