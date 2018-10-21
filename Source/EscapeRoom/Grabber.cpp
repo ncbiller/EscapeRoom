@@ -3,6 +3,7 @@
 #include "Grabber.h"
 #include "GameFramework/Actor.h"
 #include "GameFramework/PlayerController.h"
+
 #include "Engine/World.h"
 #include "DrawDebugHelpers.h"
 
@@ -59,11 +60,32 @@ void UGrabber::Grab()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Grab Pressed"))
 	/// Try and reach actors in physics collision channel set
-	AActor * ActorHit = GetPhysicsBodyInReach().GetActor();
+	auto HitResult = GetPhysicsBodyInReach();
+	
+	auto ComponentToGrab = HitResult.GetComponent();
+	auto ActorHit = HitResult.GetActor();
+
+
+	if (ActorHit) {
+		PhysicsHandle->GrabComponentAtLocationWithRotation(
+			ComponentToGrab,
+			NAME_None,
+			ActorHit->GetActorLocation(),
+			ActorHit->GetActorRotation()
+		);
+	}
+
+
+	
+
+	//PhysicsHandle->GrabComponent(ActorHit,NAME_None,Component)
 
 	if (ActorHit) {
 		UE_LOG(LogTemp, Warning, TEXT("Actor hit %s"), *ActorHit->GetName())
 	}
+
+
+
 	///if we hit something attach physics handle
 	//TODO attach physics handle
 
@@ -74,6 +96,29 @@ void UGrabber::Release()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Grab Released"))
 	//TODO release physics handle
+		if (PhysicsHandle->GrabbedComponent) {
+			PhysicsHandle->ReleaseComponent();
+		}
+}
+
+
+
+// Called every frame
+void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+{
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	// if physic handle attached move object we're holding
+	// otherwise nothing.	
+	if (PhysicsHandle->GrabbedComponent) {
+		FVector PlayerViewPointLocation;
+		FRotator PlayerViewPointRotation;
+
+		GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(PlayerViewPointLocation, PlayerViewPointRotation);
+		
+		FVector LineTraceEnd = PlayerViewPointLocation + PlayerViewPointRotation.Vector() * ReachDistance;
+		PhysicsHandle->SetTargetLocation(LineTraceEnd);
+	}
 
 }
 
@@ -102,14 +147,3 @@ FHitResult UGrabber::GetPhysicsBodyInReach() const
 		Params);
 	return hitResult;
 }
-
-// Called every frame
-void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	// if physic handle attached move object we're holding
-	// otherwise nothing.	
-
-}
-
